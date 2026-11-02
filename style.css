@@ -1036,6 +1036,7 @@ select { cursor: pointer; appearance: none; background-image: linear-gradient(45
 .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
 .subject-card {
   position: relative; text-align: left;
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
   border: 2px solid var(--ink); border-radius: var(--r-lg);
   background: var(--cream-0); overflow: hidden; cursor: pointer;
   box-shadow: var(--shadow-soft);
@@ -1043,8 +1044,8 @@ select { cursor: pointer; appearance: none; background-image: linear-gradient(45
   padding: 0;
 }
 .subject-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
-.subject-card-band { display: block; height: 54px; border-bottom: 2px solid var(--ink); }
-.subject-card-body { padding: 14px 16px 16px; }
+.subject-card-band { display: block; height: 54px; border-bottom: 2px solid var(--ink); background: var(--pattern, var(--cream-2)); }
+.subject-card-body { display: block; padding: 14px 16px 16px; }
 .subject-card-body h3 { font-size: 1.14rem; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .subject-card-body h3 .ic { width: 15px; height: 15px; color: var(--cherry-2); transition: transform 180ms var(--ease-out); }
 .subject-card:hover h3 .ic { transform: translateX(4px); }
@@ -1319,4 +1320,148 @@ select { cursor: pointer; appearance: none; background-image: linear-gradient(45
   .hero-art.reveal-scale, .hero-art.reveal-scale.reveal-in { transform: rotate(0.6deg); }
   .q-fill.indeterminate { width: 100% !important; animation: none; }
   .q-item[data-status="processing"] .q-fill { animation: none; }
+}
+
+/* ----------------------------------------------------------------------------
+   26. Minigames (offline — snake, element match, pong)
+---------------------------------------------------------------------------- */
+.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.game-card {
+  position: relative; text-align: left; font: inherit; color: inherit;
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+  border: 2px solid var(--ink); border-radius: var(--r-lg);
+  background: var(--cream-0); overflow: hidden; cursor: pointer;
+  box-shadow: var(--shadow-soft); padding: 0;
+  transition: transform 180ms var(--ease-out), box-shadow 180ms, border-color 180ms;
+}
+.game-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); border-color: var(--teal-4); }
+.game-card-band { display: block; flex: 0 0 auto; height: 46px; border-bottom: 2px solid var(--ink); background: var(--pattern, var(--cream-2)); }
+.game-card-body { display: block; flex: 1 1 auto; padding: 14px 16px 16px; }
+.game-card-kicker { display: block; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal-4); }
+.game-card-body h3 { font-size: 1.14rem; margin-top: 4px; }
+.game-card-body p { margin-top: 6px; font-size: 0.82rem; color: var(--ink-62); }
+.game-card-cta { display: inline-block; margin-top: 12px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cherry-2); }
+
+.game-panel {
+  padding: 18px; max-width: 720px;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; /* no accidental text-selection while dragging on touch */
+}
+.game-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.game-score { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-62); margin-right: 14px; }
+.game-score strong { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 650; color: var(--ink); margin-left: 6px; }
+.game-stage { position: relative; border: 2px solid var(--ink); border-radius: var(--r-lg); overflow: hidden; background: var(--cream-0); box-shadow: var(--shadow-soft); }
+.game-stage canvas { display: block; width: 100%; height: auto; touch-action: none; }
+.game-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; text-align: center;
+  padding: 20px; background: rgba(247, 243, 226, 0.93);
+}
+.game-overlay[hidden] { display: none; }
+.game-overlay .go-title { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 650; color: var(--ink); }
+.game-overlay .go-desc { font-size: 0.85rem; color: var(--ink-62); max-width: 44ch; }
+.game-hint { margin-top: 12px; font-size: 0.78rem; color: var(--ink-62); }
+
+.dpad { display: grid; grid-template-columns: repeat(3, 60px); gap: 8px; justify-content: center; margin-top: 14px; }
+.dpad button {
+  height: 48px; border: 2px solid var(--ink); border-radius: 8px;
+  background: var(--cream-2); color: var(--ink); font-size: 1.15rem; cursor: pointer;
+  touch-action: manipulation;
+}
+.dpad button:active { background: var(--teal-2); }
+.dpad .dpad-spacer { border: 0; background: transparent; pointer-events: none; }
+
+.mem-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 520px; }
+.mem-card { position: relative; aspect-ratio: 3 / 4; perspective: 700px; background: transparent; border: 0; padding: 0; cursor: pointer; }
+.mem-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 320ms var(--ease-out); }
+.mem-card.flipped .mem-inner, .mem-card.matched .mem-inner { transform: rotateY(180deg); }
+.mem-face {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 2px solid var(--ink); border-radius: 10px; box-shadow: var(--shadow-soft);
+}
+.mem-back { background: var(--pattern, var(--cream-2)); font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--ink); }
+.mem-front { transform: rotateY(180deg); background: var(--cream-0); font-family: var(--font-serif); font-weight: 700; color: var(--ink); }
+.mem-symbol { font-size: clamp(1.2rem, 4vw, 1.7rem); line-height: 1; }
+.mem-name { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-62); }
+.mem-card.matched { cursor: default; }
+.mem-card.matched .mem-front { background: #E9F5F1; border-color: var(--teal-3); }
+.mem-card.matched .mem-symbol, .mem-card.matched .mem-name { color: var(--teal-4); }
+@keyframes mem-pop {
+  0% { transform: rotateY(180deg) scale(1); }
+  50% { transform: rotateY(180deg) scale(1.07); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+.mem-card.matched .mem-inner { animation: mem-pop 320ms var(--ease-out); }
+@media (max-width: 619px) {
+  .mem-board { gap: 8px; }
+  .game-panel { padding: 14px; }
+  .mem-card { aspect-ratio: 1 / 1; } /* square cards keep the 4×4 board on screen in portrait */
+}
+/* Wide screens: Element Match goes horizontal — 8 across × 2 rows so the
+   whole board fits on screen at once. */
+@media (min-width: 620px) {
+  .mem-board { grid-template-columns: repeat(8, minmax(0, 1fr)); max-width: 940px; }
+  .mem-card { aspect-ratio: 4 / 3; }
+  .mem-name { font-size: 0.54rem; }
+  .game-panel.panel-wide { max-width: 1000px; }
+}
+
+/* Fullscreen play — the ⛶ button fills the screen with just the game. */
+.game-panel:fullscreen, .game-panel:-webkit-full-screen {
+  max-width: none; width: 100%; height: 100%;
+  border-radius: 0; background: var(--cream-1);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px;
+}
+.game-panel:fullscreen .game-toolbar, .game-panel:-webkit-full-screen .game-toolbar {
+  width: 100%; max-width: 980px; margin-inline: auto;
+}
+.game-panel:fullscreen .game-stage, .game-panel:-webkit-full-screen .game-stage {
+  width: fit-content; max-width: 100%; margin-inline: auto;
+}
+.game-panel:fullscreen .game-hint, .game-panel:-webkit-full-screen .game-hint { display: block; }
+.game-panel:fullscreen .game-stage canvas, .game-panel:-webkit-full-screen .game-stage canvas {
+  width: auto; max-width: 100%;
+  height: calc(100vh - var(--gchrome-fs, 118px));
+  height: calc(100dvh - var(--gchrome-fs, 118px));
+}
+/* Snake fullscreen: park the pad beside the board so the board gets the height. */
+body.game-snake .game-panel:fullscreen, body.game-snake .game-panel:-webkit-full-screen {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center; column-gap: 18px;
+}
+body.game-snake .game-panel:fullscreen .game-toolbar,
+body.game-snake .game-panel:-webkit-full-screen .game-toolbar { grid-column: 1 / -1; width: auto; max-width: none; }
+body.game-snake .game-panel:fullscreen .dpad,
+body.game-snake .game-panel:-webkit-full-screen .dpad { margin-top: 0; justify-content: center; }
+
+/* Landscape phones & short windows: strip the chrome, fit the whole game
+   on screen — rotate your phone sideways and everything auto-fits. */
+@media (orientation: landscape) and (max-height: 560px) {
+  body.games-view .app-footer { display: none; }
+  body.games-view .outlet { padding-top: 8px; padding-bottom: 10px; }
+  body.games-view .page-head { margin-bottom: 4px; }
+  body.games-view .page-title { font-size: 1.2rem; }
+  body.games-view .page-head .kicker, body.games-view .page-sub { display: none; }
+  body.games-view.game-live .games-back { display: none; }
+  body.games-view .game-panel { max-width: none; padding: 12px; }
+  body.games-view .game-toolbar { margin-bottom: 8px; }
+  body.games-view .game-hint { display: none; }
+  body.games-view .game-stage { width: fit-content; max-width: 100%; margin-inline: auto; }
+  body.games-view .game-stage canvas {
+    width: auto; max-width: 100%;
+    height: calc(100vh - var(--gchrome, 176px));
+    height: calc(100dvh - var(--gchrome, 176px));
+  }
+  body.games-view .dpad button { height: 44px; }
+  body.games-view .mem-board { max-width: none; }
+  body.games-view .mem-symbol { font-size: clamp(1rem, 5.5vh, 1.5rem); }
+  body.games-view .mem-name { font-size: 0.52rem; }
+  /* Snake: pad sits beside the board instead of below it. */
+  body.game-snake .game-panel {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center; column-gap: 16px;
+  }
+  body.game-snake .game-toolbar { grid-column: 1 / -1; }
+  body.game-snake .dpad { margin-top: 0; }
 }

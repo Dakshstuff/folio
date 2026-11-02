@@ -781,6 +781,9 @@ function createRealApi() {
     downloadUrl(fileId) {
       return storage.getFileDownload(cfg.storageBucketId, fileId);
     },
+    viewUrl(fileId) {
+      return storage.getFileView(cfg.storageBucketId, fileId);
+    },
     async fileBlob(fileId) {
       const url = storage.getFileView(cfg.storageBucketId, fileId);
       const res = await fetch(url, { credentials: "include" });
@@ -1003,12 +1006,15 @@ function navKeyFor(segs) {
   if (segs[0] === "subjects" || segs[0] === "subject") return "subjects";
   if (segs[0] === "recent") return "recent";
   if (segs[0] === "starred") return "starred";
+  if (segs[0] === "games") return "games";
   if (segs[0] === "settings") return "settings";
   if (segs[0] === "admin") return "admin-" + (segs[1] || "upload");
   return "dashboard";
 }
 async function route() {
   if (!state.user) { showLogin(); return; }
+  /* Minigames run their own loops and key listeners — stop them on any navigation. */
+  if (window.FolioGames) FolioGames.onRoute();
   const { segs, params } = parseHash();
   const key = navKeyFor(segs);
   setActiveNav(key);
@@ -1027,6 +1033,13 @@ async function route() {
         return;
       }
       await viewAdmin(segs[1] || "upload");
+    }
+    else if (segs[0] === "games") {
+      if (window.FolioGames) FolioGames.render(segs[1]);
+      else {
+        document.title = "Folio — Minigames";
+        dom.main.innerHTML = `<div class="empty"><p class="empty-title">games.js is missing</p><p class="empty-desc">Add the minigames file next to script.js to enable this section.</p></div>`;
+      }
     }
     else await viewDashboard();
   } catch (e) {
@@ -2453,7 +2466,7 @@ function renderDocPreview(doc) {
       ${modalHead(doc.subjectName || "", doc.title, doc.category)}
       <div class="modal-body">
         <div id="preview-host"><div class="loading-block"><span class="spinner"></span>Preparing preview…</div></div>
-        <p class="preview-note">${icon("info")}<span>Previews run in a sandboxed frame — uploaded files are never executed by this application. Unsupported formats offer a download instead.</span></p>
+        <p class="preview-note">${icon("info")}<span>Files open in a normal browser tab — nothing runs inside this page. Use Download to save a copy.</span></p>
       </div>
       <footer class="modal-foot">
         <button class="btn" type="button" data-back>‹ Back to details</button>
@@ -2474,36 +2487,10 @@ function renderDocPreview(doc) {
     });
 
     const host = $("#preview-host", root);
-    (async () => {
-      try {
-        const blob = await state.api.fileBlob(doc.fileId);
-        const url = trackBlob(URL.createObjectURL(blob));
-        if (doc.category === "image") {
-          host.innerHTML = `<img class="preview-media" src="${url}" alt="Preview of ${esc(doc.title)}" />`;
-        } else if (doc.category === "video") {
-          host.innerHTML = `<video class="preview-media" controls preload="metadata" src="${url}"></video>`;
-        } else if (doc.category === "pdf") {
-          host.innerHTML = `<iframe class="preview-frame" sandbox="" title="PDF preview of ${esc(doc.title)}" src="${url}"></iframe>`;
-        } else if (doc.category === "text") {
-          const text = await blob.text();
-          const pre = document.createElement("pre");
-          pre.className = "preview-text";
-          pre.textContent = text.slice(0, 200000);
-          host.innerHTML = "";
-          host.appendChild(pre);
-        } else {
-          host.innerHTML = `<div class="empty"><div class="empty-art">${emptyArt("noResults")}</div><p class="empty-title">No preview available</p><p class="empty-desc">This format cannot be previewed safely — download it instead.</p></div>`;
-        }
-      } catch (e) {
-        if (demoBlocked(e)) {
-          host.innerHTML = `<div class="empty"><div class="empty-art">${emptyArt("offline")}</div><p class="empty-title">Preview needs a real backend</p><p class="empty-desc">${esc(e.userMessage)}</p></div>`;
-          return;
-        }
-        host.innerHTML = `<div class="empty"><div class="empty-art">${emptyArt("offline")}</div><p class="empty-title">Preview unavailable</p><p class="empty-desc">${esc(friendlyError(e, "The file could not be loaded for preview."))}</p>
-          <div class="empty-actions"><button class="btn btn-primary" type="button" data-dl2>${icon("download")}<span>Download instead</span></button></div></div>`;
-        host.querySelector("[data-dl2]")?.addEventListener("click", () => root.querySelector("[data-dl]").click());
-      }
-    })();
+    host.innerHTML = `<div class="empty"><div class="empty-art">${emptyArt("noResults")}</div>
+      <p class="empty-title">Open in browser</p>
+      <p class="empty-desc">The file opens in a new tab and your browser renders it natively — PDFs, images, video and text.</p>
+      <div class="empty-actions"><a class="btn btn-primary" href="${esc(state.api.viewUrl(doc.fileId))}" target="_blank" rel="noopener">${icon("doc")}<span>Open ${esc(doc.title)}</span></a></div></div>`;
   }, { wide: true });
 }
 
