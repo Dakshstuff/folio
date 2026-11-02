@@ -757,7 +757,10 @@ function createRealApi() {
     },
     /* Chunked upload with real progress events (SDK 11 exposes onProgress). */
     uploadFile(file, onProgress) {
-      const fileId = ID.unique();
+      /* Generate a valid ID client-side: the vendored SDK's ID.unique() returns
+         the literal magic string "unique()", which Appwrite replaces server-side.
+         Storing that placeholder broke every preview/download (HTTP 400). */
+      const fileId = ("f" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).slice(0, 36);
       const promise = storage.createFile(cfg.storageBucketId, fileId, file, [], (p) => {
         if (typeof onProgress === "function") {
           const pct = Math.max(0, Math.min(100, Math.round(p && p.progress != null ? p.progress : 0)));
@@ -2142,7 +2145,8 @@ async function uploadOne(item, subjectId) {
       if (pct % 25 === 0) announce(`${item.file.name} — ${pct}% uploaded.`);
     });
     item.fileId = fileId;
-    await promise;
+    const storedFile = await promise;
+    if (storedFile && storedFile.$id) item.fileId = storedFile.$id; /* trust the server response */
     clearTimeout(indeterminateTimer);
     item.status = "processing";
     renderQueue();
@@ -2586,7 +2590,8 @@ async function handleReplaceFile(docId, file) {
           fill.style.width = pct + "%";
           $("#rp-progress", root).setAttribute("aria-valuenow", String(pct));
         });
-        await promise;
+        const storedFile = await promise;
+        const newFileId = (storedFile && storedFile.$id) || fileId;
         $("#rp-msg", root).innerHTML = `<div class="alert alert-info">${icon("info")}<span>File stored — recording version history…</span></div>`;
         const existingVersions = await state.api.listVersions(doc.id);
         if (!existingVersions.some(v => v.versionNumber === doc.version)) {
