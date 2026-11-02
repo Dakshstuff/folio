@@ -594,12 +594,13 @@ function demoApi(role) {
    8. REAL BACKEND — Appwrite Web SDK (pinned v11.0.0 IIFE build)
 ---------------------------------------------------------------------------- */
 function createRealApi() {
-  const { Client, Account, Databases, Storage, Query, ID, Permission, Role } = window.Appwrite;
+  const { Client, Account, Databases, Storage, Teams, Query, ID, Permission, Role } = window.Appwrite;
   const cfg = FOLIO_CONFIG, adv = FOLIO_ADVANCED;
   const client = new Client().setEndpoint(cfg.endpoint).setProject(cfg.projectId);
   const account = new Account(client);
   const databases = new Databases(client);
   const storage = new Storage(client);
+  const teams = new Teams(client);
 
   const normDoc = (d) => ({
     id: d.$id, title: d.title, description: d.description || "",
@@ -645,8 +646,9 @@ function createRealApi() {
        membership; a viewer receives an error, which we treat as "not admin". */
     async getAdminFlag() {
       try {
-        const res = await account.listMemberships(adv.adminTeamId);
-        return (res.total || 0) > 0;
+        const res = await teams.list([Query.limit(100)]);
+        const ids = (res.teams || []).map(t => t.$id);
+        return ids.includes(adv.adminTeamId);
       } catch (e) {
         if (e && (e.code === 401 || e.type === "session_expired" || e.type === "user_unauthorized")) throw e;
         return false;
