@@ -642,8 +642,12 @@ function createRealApi() {
         return { email: "", displayName: "", username: "", role: "viewer" };
       }
     },
-    /* Trusted, server-verified administrator check: Appwrite confirms team
-       membership; a viewer receives an error, which we treat as "not admin". */
+    /* Trusted, server-verified administrator check: ask Appwrite which teams
+       the signed-in user belongs to (GET /teams — always allowed for the
+       session owner) and look for the admins team. The previous approach,
+       Account.listMemberships(teamId), hits GET /teams/{id}/memberships,
+       which Appwrite restricts to members with the "owner" role — regular
+       "admin"-role members get rejected, silently hiding the admin UI. */
     async getAdminFlag() {
       try {
         const res = await teams.list([Query.limit(100)]);
@@ -757,9 +761,11 @@ function createRealApi() {
     },
     /* Chunked upload with real progress events (SDK 11 exposes onProgress). */
     uploadFile(file, onProgress) {
-      /* Generate a valid ID client-side: the vendored SDK's ID.unique() returns
-         the literal magic string "unique()", which Appwrite replaces server-side.
-         Storing that placeholder broke every preview/download (HTTP 400). */
+      /* Generate a valid ID client-side instead of ID.unique(): the vendored
+         SDK's ID.unique() returns the literal magic string "unique()", which
+         Appwrite replaces with its own ID server-side. Returning that
+         placeholder made every preview/download send "unique()" as the fileId
+         (HTTP 400 invalid UID). A locally generated ID is stored verbatim. */
       const fileId = ("f" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).slice(0, 36);
       const promise = storage.createFile(cfg.storageBucketId, fileId, file, [], (p) => {
         if (typeof onProgress === "function") {
@@ -782,6 +788,9 @@ function createRealApi() {
       return storage.getFileDownload(cfg.storageBucketId, fileId);
     },
     viewUrl(fileId) {
+      /* Inline view URL — a normal tab navigates here and the browser renders
+         the file natively (PDF, image, video, text). Top-level navigation sends
+         the Appwrite session cookie, so no fetch/iframe is needed. */
       return storage.getFileView(cfg.storageBucketId, fileId);
     },
     async fileBlob(fileId) {
@@ -1946,8 +1955,12 @@ async function adminUploadTab() {
         <span class="uz-title">Drag resources here, or browse</span>
         <span class="uz-hint" id="upload-help">Multiple files supported — PDF, Word, PowerPoint, Excel, images, video and archives, up to <strong>${maxMB} MB</strong> each.</span>
         <span class="uz-allowlist">pdf · docx · doc · pptx · ppt · xlsx · xls · txt · csv · png · jpg · jpeg · webp · mp4 · zip</span>
-        <button class="btn btn-teal" id="btn-browse" type="button">${icon("plus")}<span>Choose files</span></button>
+        <div class="uz-buttons">
+          <button class="btn btn-teal" id="btn-browse" type="button">${icon("plus")}<span>Choose files</span></button>
+          <button class="btn" id="btn-scan" type="button">${icon("camera")}<span>Scan to PDF</span></button>
+        </div>
       </div>
+      <div class="scan-tray" id="scan-tray" hidden></div>
       <div class="upload-meta">
         <div class="field">
           <label for="up-subject">Subject for queued files</label>
@@ -1969,8 +1982,9 @@ async function adminUploadTab() {
     <div class="upload-queue" id="upload-queue"></div>`;
 
   const zone = $("#upload-zone");
-  zone.addEventListener("click", (e) => { if (!e.target.closest("#btn-browse")) openUploadPicker(); });
+  zone.addEventListener("click", (e) => { if (e.target.closest("#btn-scan")) return; if (!e.target.closest("#btn-browse")) openUploadPicker(); });
   zone.addEventListener("keydown", (e) => {
+    if (e.target.closest("#btn-scan")) return;
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openUploadPicker(); }
   });
   $("#btn-browse").addEventListener("click", openUploadPicker);
@@ -2398,6 +2412,7 @@ async function openDocModal(docId, focusAction) {
   renderDocDetail(doc, focusAction);
 }
 function renderDocDetail(doc, focusAction) {
+  let focus = focusAction;
   pushModal((root) => {
     const starred = state.stars.has(doc.id);
     root.innerHTML = `
@@ -2454,12 +2469,12 @@ function renderDocDetail(doc, focusAction) {
     root.querySelector("[data-act='replace']")?.addEventListener("click", () => replaceFileFlow(doc));
     root.querySelector("[data-act='versions']")?.addEventListener("click", () => renderDocVersions(doc));
     root.querySelector("[data-act='delete']")?.addEventListener("click", () => deleteDocumentFlow(doc.id));
-    if (focusAction === "edit") root.querySelector("[data-act='edit']")?.click();
+    if (focus === "edit") { focus = null; root.querySelector("[data-act='edit']")?.click(); }
   });
 }
 
-/* Preview — safe content handling: sandboxed iframe, img, video or text; uploaded
-   files are never executed in the application origin and HTML is never rendered. */
+/* Preview — link-based: files open in a normal browser tab where the browser
+   renders them natively. Nothing is embedded in a frame inside the app. */
 function renderDocPreview(doc) {
   pushModal((root) => {
     root.innerHTML = `
@@ -2578,7 +2593,7 @@ async function handleReplaceFile(docId, file) {
           $("#rp-progress", root).setAttribute("aria-valuenow", String(pct));
         });
         const storedFile = await promise;
-        const newFileId = (storedFile && storedFile.$id) || fileId;
+        const newFileId = (storedFile && storedFile.$id) || fileId; /* trust the server response */
         $("#rp-msg", root).innerHTML = `<div class="alert alert-info">${icon("info")}<span>File stored — recording version history…</span></div>`;
         const existingVersions = await state.api.listVersions(doc.id);
         if (!existingVersions.some(v => v.versionNumber === doc.version)) {
@@ -2591,7 +2606,7 @@ async function handleReplaceFile(docId, file) {
         const cat = fileCat(file.name, file.type);
         const mime = EXT_META[ext]?.mime || file.type || "application/octet-stream";
         await state.api.updateDocument(doc.id, {
-          fileId, fileName: file.name, mimeType: mime, category: cat, fileSize: file.size,
+          fileId: newFileId, fileName: file.name, mimeType: mime, category: cat, fileSize: file.size,
           version: doc.version + 1,
           searchText: buildSearchText([doc.title, doc.description, doc.subjectName, EXT_META[ext]?.label || "", (doc.tags || []).join(" "), file.name])
         });
@@ -2724,6 +2739,13 @@ function bindFileInput() {
       if (state.demo) { toast("info", "Preview mode — file uploads need a connected backend."); return; }
       enqueueFiles(files);
     }
+  });
+  // "Scan to PDF" (scan.js) hands over a ready-made PDF — feed it through the normal queue.
+  window.addEventListener("folio:scan-pdf", (e) => {
+    const file = e.detail && e.detail.file;
+    if (!file) return;
+    if (state.demo) { toast("info", "Preview mode — file uploads need a connected backend."); return; }
+    enqueueFiles([file]);
   });
 }
 
