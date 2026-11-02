@@ -1,0 +1,32 @@
+collection_id,attribute_key,type,size,required,default,array,allowed_values,notes
+profiles,email,string,256,yes,,,,
+profiles,displayName,string,128,no,,,,
+profiles,username,string,64,no,,,,
+profiles,role,string,32,no,,,"admin, viewer",Display only; the real role is team membership
+subjects,name,string,128,yes,,,,Sorted A-Z in the sidebar
+subjects,description,string,1024,no,"""""",,,
+subjects,archived,boolean,,yes,false,,,true hides the subject from the sidebar without deleting it
+documents,title,string,256,yes,,,,
+documents,description,string,2048,no,"""""",,,
+documents,subjectId,string,64,yes,,,,Appwrite $id of the parent subject
+documents,subjectName,string,128,no,,,,Denormalised for display; refreshed when a subject is renamed
+documents,fileId,string,64,yes,,,,Storage file ID of the current version
+documents,fileName,string,256,yes,,,,Original file name with extension
+documents,mimeType,string,128,yes,,,,
+documents,category,string,32,yes,,,"pdf, document, presentation, spreadsheet, text, image, video, archive, other",Filter facet; derived from the file extension
+documents,fileSize,integer,,yes,0,,,Bytes; powers size sorting and storage statistics
+documents,tags,string,64,no,,yes,,"String array, up to 10 items; comma-separated in the UI"
+documents,uploadedBy,string,64,yes,,,,Admin user ID who uploaded the current version
+documents,uploadedByName,string,128,no,,,,Display convenience
+documents,version,integer,,yes,1,,,Current version number; bumps on every file replace
+documents,searchText,string,2048,no,,,,"Lowercase blob (title + description + subject + file name + tags, max 1900 chars); powers full-text search"
+document_versions,documentId,string,64,yes,,,,Parent documents $id
+document_versions,fileId,string,64,yes,,,,Storage file ID of this revision
+document_versions,fileName,string,256,yes,,,,
+document_versions,mimeType,string,128,yes,,,,
+document_versions,fileSize,integer,,yes,,,,Bytes
+document_versions,versionNumber,integer,,yes,,,,1-based; highest = newest
+document_versions,changeNote,string,512,no,,,,Changelog note entered when replacing a file
+document_versions,createdBy,string,64,no,,,,Admin user ID who uploaded this revision
+starred,userId,string,64,yes,,,,Appwrite user ID of the member who starred
+starred,documentId,string,64,yes,,,,$id of the starred document

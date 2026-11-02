@@ -1,0 +1,14 @@
+collection_id,index_name,index_type,attributes,orders,priority,notes
+documents,ft_searchText,fulltext,searchText,,REQUIRED,"Query.search('searchText', ...) fails without this index"
+documents,idx_subjectId,key,subjectId,,recommended,Subject facet filter
+documents,idx_category,key,category,,recommended,File-type facet filter
+documents,idx_title,key,title,,recommended,Title A-Z / Z-A sorting
+documents,idx_fileSize,key,fileSize,,recommended,Largest / smallest sorting
+documents,idx_createdAt,key,$createdAt,DESC,optional,$createdAt is built-in; only add if the console shows no default index
+document_versions,idx_documentId,key,documentId,,recommended,Version history lookups
+document_versions,idx_doc_version,key,"documentId, versionNumber",DESC,optional,Composite: efficient per-document version listing
+starred,idx_userId,key,userId,,recommended,Stars page lookups
+starred,idx_user_document,unique,"userId, documentId",,recommended,Unique composite - blocks duplicate stars at the database level
+subjects,idx_name,key,name,,REQUIRED,Sidebar lists subjects ordered by name
+subjects,idx_name_unique,unique,name,,optional,Alternative to idx_name that also prevents duplicate subject names
+profiles,(none),,,,,No indexes needed - profile documents are fetched directly by $id (= user ID)

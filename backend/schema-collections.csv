@@ -1,0 +1,10 @@
+resource_type,id,name,purpose,read_permission,write_permission,document_security,notes
+database,folio,Folio Database,Top-level container for all five Folio collections,,,,Console > Databases > Add database. Put its ID in FOLIO_CONFIG.databaseId
+collection,profiles,Profiles,One row per user. Document $id equals the Appwrite Account ID,none (document-level only),none (managed via server key / API),Enabled,Each document gets: read user:<userId> + read team:admins. Rows are created ONLY by backend/create_user.py
+collection,subjects,Subjects,Academic subject groupings shown in the sidebar and library filters,users (any signed-in user),team:admins,Disabled,archived=true hides a subject without deleting it
+collection,documents,Documents,"One row per library resource - metadata only, never file contents",users,team:admins,Disabled,searchText is the lowercase search blob: title + description + subject + file name + tags
+collection,document_versions,Document Versions,One row per uploaded file revision. Highest versionNumber = current version,users,team:admins,Disabled,Linked to documents via documentId
+collection,starred,Starred Documents,Per-user bookmarks. Each row carries owner-only document permissions,users,users,Enabled,"Frontend sets read/update/delete user:<userId> on every row, so members see only their own stars"
+team,admins,Folio Administrators,Server-enforced admin role - grants write access everywhere,,,,Membership is managed by backend/create_user.py
+team,viewers,Folio Viewers,Server-enforced viewer role - read only,,,,Role = team membership; the profiles.role field is display only
+storage-bucket,resources,Folio Resources,Binary file storage for every uploaded document,users,team:admins,Disabled (bucket-level permissions apply),"Max file size per plan (25 MB on Cloud free tier). Allowed extensions: pdf, docx, doc, pptx, ppt, xlsx, xls, txt, csv, png, jpg, jpeg, webp, mp4, zip"

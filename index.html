@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Folio — a private, animated academic resource library. Browse, search, preview and download curated study documents." />
+  <meta name="theme-color" content="#F1EAD5" />
+  <title>Folio — Academic Resource Library</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%231B8C88'/%3E%3Ccircle cx='19' cy='30' r='9' fill='%23E10823'/%3E%3Ccircle cx='32' cy='32' r='6.5' fill='%239A001A'/%3E%3Cpath d='M19 21c1-6 5-9 10-10M32 25.5c0-5 2-9-3-14.5' stroke='%23F7F3E2' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <!-- Typography: Fraunces (expressive headings) + Inter (interface). System fallbacks are declared in style.css. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <noscript>
+    <div class="noscript-note">Folio needs JavaScript to run. Please enable JavaScript and reload this page.</div>
+  </noscript>
+
+  <!-- ======================================================================
+       SVG SPRITE — line icons, logo placeholder and original cherry artwork
+       ====================================================================== -->
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <defs>
+
+      <!-- LOGO PLACEHOLDER: replace the contents of #logo-mark with your institution's mark. -->
+      <symbol id="logo-mark" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="10" fill="#1B8C88"/>
+        <path d="M20 21.5c1-8 6-12 13-13M31.5 26c0-7 2-12-2-17" fill="none" stroke="#F7F3E2" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="20" cy="30.5" r="9.5" fill="#E10823" stroke="#56000F" stroke-width="1.6"/>
+        <circle cx="31.5" cy="33" r="6.8" fill="#9A001A" stroke="#56000F" stroke-width="1.6"/>
+        <ellipse cx="16.8" cy="27" rx="3.4" ry="2" fill="#FFD2B4" transform="rotate(-24 16.8 27)"/>
+      </symbol>
+
+      <symbol id="art-cherries" viewBox="0 0 560 600">
+        <defs>
+          <radialGradient id="g-cherry-a" cx="0.36" cy="0.3" r="0.95">
+            <stop offset="0" stop-color="#FF7A5C"/><stop offset="0.38" stop-color="#E10823"/>
+            <stop offset="0.78" stop-color="#9A001A"/><stop offset="1" stop-color="#56000F"/>
+          </radialGradient>
+          <radialGradient id="g-cherry-b" cx="0.38" cy="0.32" r="0.95">
+            <stop offset="0" stop-color="#FF9174"/><stop offset="0.45" stop-color="#E10823"/><stop offset="1" stop-color="#7A0015"/>
+          </radialGradient>
+          <radialGradient id="g-gloss" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#FFD2B4" stop-opacity="0.95"/><stop offset="1" stop-color="#FFD2B4" stop-opacity="0"/>
+          </radialGradient>
+          <pattern id="p-checker" width="46" height="46" patternUnits="userSpaceOnUse">
+            <rect width="46" height="46" fill="#F7F3E2"/>
+            <rect width="23" height="23" fill="#9FE8DF"/>
+            <rect x="23" y="23" width="23" height="23" fill="#9FE8DF"/>
+          </pattern>
+          <pattern id="p-dots" width="16" height="16" patternUnits="userSpaceOnUse">
+            <circle cx="3" cy="3" r="2" fill="#1B8C88"/>
+          </pattern>
+        </defs>
+        <rect width="560" height="600" fill="#F1EAD5"/>
+        <path d="M84 600V330a196 196 0 0 1 392 0v270Z" fill="#53B8B1"/>
+        <path d="M84 600V330a196 196 0 0 1 392 0v270Z" fill="url(#p-dots)" opacity="0.18"/>
+        <path d="M116 600V336a164 164 0 0 1 328 0v264" fill="none" stroke="#F7F3E2" stroke-width="3" stroke-dasharray="1 14" stroke-linecap="round" opacity="0.85"/>
+        <g transform="rotate(-2 280 540)">
+          <rect x="-12" y="470" width="584" height="150" fill="url(#p-checker)"/>
+          <rect x="-12" y="470" width="584" height="150" fill="none" stroke="#56000F" stroke-opacity="0.14"/>
+        </g>
+        <circle cx="458" cy="120" r="58" fill="none" stroke="#1B8C88" stroke-width="3" stroke-dasharray="3 11" stroke-linecap="round"/>
+        <path d="M108 96c2.4 12.8 7.2 17.6 20 20-12.8 2.4-17.6 7.2-20 20-2.4-12.8-7.2-17.6-20-20 12.8-2.4 17.6-7.2 20-20Z" fill="#E10823"/>
+        <path d="M490 318c1.7 9 5 12.4 14 14-9 1.7-12.3 5-14 14-1.7-9-5-12.3-14-14 9-1.6 12.3-5 14-14Z" fill="#1B8C88"/>
+        <g>
+          <rect x="64" y="60" width="12" height="12" fill="#1B8C88"/>
+          <rect x="86" y="62" width="132" height="9" rx="4.5" fill="#56000F" opacity="0.85"/>
+          <rect x="86" y="80" width="86" height="7" rx="3.5" fill="#56000F" opacity="0.35"/>
+        </g>
+        <path d="M298 336c-6-56 8-96 40-128" fill="none" stroke="#335415" stroke-width="9" stroke-linecap="round"/>
+        <path d="M398 396c10-64-2-118-32-152" fill="none" stroke="#335415" stroke-width="8" stroke-linecap="round"/>
+        <path d="M338 208c18-52 76-74 122-58-16 50-74 74-122 58Z" fill="#88A93B" stroke="#335415" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M350 202c32-14 68-30 96-44" fill="none" stroke="#668228" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M300 224c-26-16-32-52-16-78 26 8 40 44 16 78Z" fill="#C9DE89" stroke="#335415" stroke-width="3.5" stroke-linejoin="round"/>
+        <ellipse cx="306" cy="500" rx="118" ry="30" fill="#56000F" opacity="0.14"/>
+        <circle cx="296" cy="416" r="98" fill="url(#g-cherry-a)" stroke="#56000F" stroke-width="5"/>
+        <path d="M212 380c10-34 40-58 78-62" fill="none" stroke="#9A001A" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+        <ellipse cx="258" cy="368" rx="40" ry="22" fill="url(#g-gloss)" transform="rotate(-22 258 368)"/>
+        <circle cx="244" cy="358" r="7" fill="#F7F3E2" opacity="0.9"/>
+        <circle cx="410" cy="452" r="72" fill="url(#g-cherry-b)" stroke="#56000F" stroke-width="4.5"/>
+        <path d="M352 428c8-22 28-38 54-42" fill="none" stroke="#9A001A" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+        <ellipse cx="386" cy="418" rx="27" ry="15" fill="url(#g-gloss)" transform="rotate(-20 386 418)"/>
+        <circle cx="376" cy="411" r="5.5" fill="#F7F3E2" opacity="0.9"/>
+      </symbol>
+
+      <!-- ============================ line icons ============================ -->
+      <symbol id="i-menu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></g></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></g></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M15.8 15.8L21 21"/></g></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.2L12 4l8 7.2"/><path d="M6.2 9.4V20h11.6V9.4"/><path d="M10.2 20v-5.4h3.6V20"/></g></symbol>
+      <symbol id="i-books" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h4.5v15H5z"/><path d="M12 8.5h4.5v11H12z"/><path d="M19.4 5.4l1.9.5-2.8 13.5"/></g></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7A1.5 1.5 0 0 1 5 5.5h4.2l2 2.5H19a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z"/></g></symbol>
+      <symbol id="i-folder-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7A1.5 1.5 0 0 1 5 5.5h4.2l2 2.5H19a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M12 11v5.4M9.3 13.7h5.4"/></g></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.2l3 1.8"/></g></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4.6l2.3 4.8 5.2.7-3.8 3.6.9 5.2-4.6-2.5-4.6 2.5.9-5.2L4.5 10l5.2-.7z"/></g></symbol>
+      <symbol id="i-star-fill" viewBox="0 0 24 24"><path d="M12 4.6l2.3 4.8 5.2.7-3.8 3.6.9 5.2-4.6-2.5-4.6 2.5.9-5.2L4.5 10l5.2-.7z" fill="currentColor"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 4.5v2.3M7 11.3v8.2M12 4.5v8.3M12 17.3v2.2M17 4.5v1.3M17 10.3v9.2"/><circle cx="7" cy="9" r="2.1"/><circle cx="12" cy="15" r="2.1"/><circle cx="17" cy="8" r="2.1"/></g></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V5"/><path d="M8.2 8.8L12 5l3.8 3.8"/><path d="M4.5 19h15"/></g></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v10.5"/><path d="M8.2 11.7L12 15.5l3.8-3.8"/><path d="M4.5 19h15"/></g></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 12S6.2 5.9 12 5.9 21.2 12 21.2 12 17.8 18.1 12 18.1 2.8 12 2.8 12z"/><circle cx="12" cy="12" r="2.9"/></g></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5l1-4L17 4a2.12 2.12 0 0 1 3 3L8.5 18.5z"/><path d="M14.8 6.2l3 3"/></g></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V4.8h5V7"/><path d="M6.5 7l.9 12.2h9.2L17.5 7"/><path d="M10.2 10.5v5.5M13.8 10.5v5.5"/></g></symbol>
+      <symbol id="i-swap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h12.5"/><path d="M13.5 5.5l3 3-3 3"/><path d="M20 15.5H7.5"/><path d="M10.5 12.5l-3 3 3 3"/></g></symbol>
+      <symbol id="i-history" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4.5V9h-4.5"/><path d="M12 8.5V12l2.6 1.6"/></g></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4.5V9h-4.5"/></g></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></g></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.8l4.4 4.4L19 7.4"/></g></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.8L20.8 19.6H3.2z"/><path d="M12 10v4"/><path d="M12 16.9h.01"/></g></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 11.2v5"/><path d="M12 8.01h.01"/></g></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6"/></g></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 19.5H5.5v-15H10"/><path d="M13.5 8.2l3.8 3.8-3.8 3.8"/><path d="M17.3 12H8.5"/></g></symbol>
+      <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.3" cy="15.7" r="4.1"/><path d="M11.4 12.6L20 4"/><path d="M15.8 4.9l3.3 3.3"/></g></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.7"/><path d="M5 20c1.1-3.9 3.9-5.6 7-5.6s5.9 1.7 7 5.6"/></g></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 5.4A1.6 1.6 0 0 1 8.4 3.8h5.2L18 8.2v10.4a1.6 1.6 0 0 1-1.6 1.6H8.4a1.6 1.6 0 0 1-1.6-1.6z"/><path d="M13.4 3.8v4.6H18"/><path d="M9.6 13.2h4.8M9.6 16.4h4.8"/></g></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6.5h16M7.5 12h9M10.5 17.5h3"/></g></symbol>
+      <symbol id="i-panels" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="4.5" width="6.4" height="6.4" rx="1"/><rect x="13.1" y="4.5" width="6.4" height="6.4" rx="1"/><rect x="4.5" y="13.1" width="6.4" height="6.4" rx="1"/><rect x="13.1" y="13.1" width="6.4" height="6.4" rx="1"/></g></symbol>
+      <symbol id="i-list-rows" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6.5h10.5M9 12h10.5M9 17.5h10.5"/><circle cx="5" cy="6.5" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="17.5" r="1" fill="currentColor" stroke="none"/></g></symbol>
+    </defs>
+  </svg>
+
+  <!-- Toast stack + screen-reader announcer -->
+  <div id="toasts" class="toasts" aria-label="Notifications"></div>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+
+  <!-- ======================================================================
+       LOGIN VIEW
+       ====================================================================== -->
+  <section id="login-view" class="login" hidden>
+    <div class="login-art" aria-hidden="true">
+      <div class="login-art-board" data-reveal>
+        <svg class="login-cherries" viewBox="0 0 560 600" role="img" aria-label="Illustration of glossy red cherries on a geometric cream and teal checkerboard"><use href="#art-cherries"/></svg>
+      </div>
+      <p class="login-art-caption" data-reveal>An illustrated archive for your study resources.</p>
+    </div>
+    <div class="login-panel">
+      <div class="login-card" data-reveal>
+        <header class="login-head">
+          <span class="wordmark wordmark-lg"><svg class="wordmark-mark" aria-hidden="true"><use href="#logo-mark"/></svg><span class="wordmark-text">Folio</span></span>
+          <p class="login-tag">The animated academic resource library</p>
+        </header>
+        <div id="login-alert" class="alert alert-error" role="alert" hidden></div>
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="login-email">Email address</label>
+            <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" required />
+            <p class="field-error" id="login-email-err" hidden></p>
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <div class="pw-wrap">
+              <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+              <button type="button" id="pw-toggle" class="pw-toggle" aria-pressed="false" aria-label="Show password">Show</button>
+            </div>
+            <p class="field-error" id="login-password-err" hidden></p>
+          </div>
+          <button id="login-submit" class="btn btn-primary btn-block btn-lg" type="submit">
+            <span class="btn-label">Sign in to Folio</span>
+          </button>
+        </form>
+        <p class="login-note">Accounts are provisioned by your administrator. There is no public registration.</p>
+        <p class="login-foot">© <span id="login-year">2025</span> Folio</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configuration screen (rendered by script.js when FOLIO_CONFIG is not set) -->
+  <section id="config-view" hidden></section>
+
+  <!-- ======================================================================
+       APPLICATION SHELL
+       ====================================================================== -->
+  <div id="shell" class="shell" hidden>
+    <div id="nav-backdrop" class="nav-backdrop" hidden></div>
+
+    <aside id="sidebar" class="sidebar" aria-label="Primary">
+      <div class="side-head">
+        <a href="#/dashboard" class="wordmark" aria-label="Folio — go to dashboard">
+          <svg class="wordmark-mark" aria-hidden="true"><use href="#logo-mark"/></svg>
+          <span class="wordmark-text">Folio</span>
+        </a>
+        <button id="btn-side-close" class="icon-btn side-close" type="button" aria-label="Close navigation">
+          <svg class="ic"><use href="#i-x"/></svg>
+        </button>
+      </div>
+      <div class="side-rule" aria-hidden="true"></div>
+
+      <nav class="side-nav" aria-label="Primary">
+        <span id="nav-indicator" class="nav-indicator" aria-hidden="true"></span>
+        <a class="nav-item" data-nav="dashboard" href="#/dashboard"><svg class="ic"><use href="#i-home"/></svg><span>Dashboard</span></a>
+        <a class="nav-item" data-nav="library" href="#/library"><svg class="ic"><use href="#i-books"/></svg><span>Resource Library</span></a>
+        <a class="nav-item" data-nav="subjects" href="#/subjects"><svg class="ic"><use href="#i-folder"/></svg><span>Subjects</span></a>
+        <a class="nav-item" data-nav="recent" href="#/recent"><svg class="ic"><use href="#i-clock"/></svg><span>Recently Added</span></a>
+        <a class="nav-item" data-nav="starred" href="#/starred"><svg class="ic"><use href="#i-star"/></svg><span>Starred</span></a>
+        <a class="nav-item" data-nav="settings" href="#/settings"><svg class="ic"><use href="#i-sliders"/></svg><span>Settings</span></a>
+
+        <div id="admin-nav" class="admin-nav" hidden>
+          <span class="nav-kicker">Administrator</span>
+          <a class="nav-item" data-nav="admin-upload" href="#/admin/upload"><svg class="ic"><use href="#i-upload"/></svg><span>Upload Center</span></a>
+          <a class="nav-item" data-nav="admin-documents" href="#/admin/documents"><svg class="ic"><use href="#i-doc"/></svg><span>Manage Documents</span></a>
+          <a class="nav-item" data-nav="admin-subjects" href="#/admin/subjects"><svg class="ic"><use href="#i-folder-plus"/></svg><span>Manage Subjects</span></a>
+        </div>
+      </nav>
+
+      <div class="side-account" id="side-account">
+        <div class="acct-row">
+          <span id="side-avatar" class="avatar" aria-hidden="true">··</span>
+          <div class="acct-meta">
+            <span id="side-name" class="acct-name">…</span>
+            <span id="side-role" class="role-badge">…</span>
+          </div>
+        </div>
+        <div class="acct-actions">
+          <button id="btn-side-password" class="btn btn-ghost btn-sm btn-block" type="button">
+            <svg class="ic"><use href="#i-key"/></svg><span>Change password</span>
+          </button>
+          <button id="btn-side-logout" class="btn btn-ghost btn-sm btn-block" type="button">
+            <svg class="ic"><use href="#i-logout"/></svg><span>Log out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="shell-main">
+      <header class="mobile-bar">
+        <button id="btn-menu" class="icon-btn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+          <svg class="ic"><use href="#i-menu"/></svg>
+        </button>
+        <a href="#/dashboard" class="wordmark wordmark-sm" aria-label="Folio — go to dashboard">
+          <svg class="wordmark-mark" aria-hidden="true"><use href="#logo-mark"/></svg>
+          <span class="wordmark-text">Folio</span>
+        </a>
+      </header>
+
+      <div id="preview-banner" class="preview-banner" role="status" hidden>
+        <svg class="ic"><use href="#i-info"/></svg>
+        <p><strong>Preview mode</strong> — simulated data for design review only. Configure <code>FOLIO_CONFIG</code> in <code>script.js</code> to connect your real Appwrite library.</p>
+        <button id="btn-exit-preview" class="btn btn-ghost btn-sm" type="button">Exit preview</button>
+      </div>
+
+      <main id="main" class="outlet" tabindex="-1"></main>
+
+      <footer class="app-footer">
+        <span>Folio — the animated academic resource library</span>
+        <span id="foot-meta">Private · Sign-in required</span>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal root + hidden file input used by the upload zone and replace flow -->
+  <dialog id="modal" class="modal"></dialog>
+  <input id="file-input" type="file" multiple hidden
+         accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.txt,.csv,.png,.jpg,.jpeg,.webp,.mp4,.zip" />
+
+  <!--
+    Appwrite Web SDK — pinned version 11.0.0, official IIFE build (no build step required).
+    Exposes the global `window.Appwrite` (Client, Account, Databases, Storage, Query, ID, Permission, Role, AppwriteException).
+    Vendored locally (appwrite.sdk.js) so Folio keeps working when CDNs are blocked or
+    unreachable; if the file is ever missing, script.js falls back to the official CDN copy.
+    See script.js header comments for the exact APIs used and compatibility notes.
+  -->
+  <script src="appwrite.sdk.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>

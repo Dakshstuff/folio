@@ -1,0 +1,26 @@
+# ============================================================================
+# Folio — what must NEVER reach a git repository
+# ============================================================================
+
+# --- SECRETS ---------------------------------------------------------------
+# backend/.env holds APPWRITE_API_KEY — a root-equivalent server secret.
+# The Appwrite console never shows it again after creation, and anyone who
+# obtains it can read AND write your whole project. Ignore every .env, but
+# keep the documentation template (.env.example) trackable.
+.env
+backend/.env
+*.env
+
+# Temporary passwords written by backend/create_user.py (--generate-password)
+generated-password-*.txt
+
+# --- Python artifacts -------------------------------------------------------
+__pycache__/
+*.pyc
+
+# --- OS / editor noise ------------------------------------------------------
+Thumbs.db
+.DS_Store
+Desktop.ini
+.vscode/
+.idea/
